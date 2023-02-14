@@ -99,7 +99,7 @@ form.addEventListener("submit", (e) => {
           document.getElementById(validator.field).value
         )
       ) {
-        if (msg[validator.field] === "email") {
+        if (validator.field === "email") {
           msg[validator.field] = { error: "Invalid input" };
         } else {
           msg[validator.field] = {
