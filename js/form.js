@@ -13,7 +13,6 @@ fetch(
   });
 
 const stateSelect = document.getElementById("state");
-console.log(countrySelect.children[0].innerHTML);
 
 if (countrySelect.children[0].innerHTML === "Select Country") {
   stateSelect.disabled = true;
@@ -44,8 +43,7 @@ countrySelect.addEventListener("change", function () {
             });
           }
         }
-        console.log(countryName);
-        if (countryName === "Select Country") {
+        if (countryName === "") {
           stateSelect.disabled = true;
         }
       });
@@ -73,10 +71,6 @@ form.addEventListener("submit", (e) => {
       }
     }
     if (validator.validator.minLength) {
-      console.log(
-        document.getElementById(validator.field).value.length,
-        validator.validator.minLength
-      );
       if (
         document.getElementById(validator.field).value.length <
         validator.validator.minLength
@@ -118,10 +112,8 @@ form.addEventListener("submit", (e) => {
   });
 
   if (Object.keys(msg).length === 0) {
-    console.log("Success");
     parentWindow.postMessage({ Success: "All Field are valid." }, "*");
   } else {
-    console.log(msg);
     parentWindow.postMessage(msg, "*");
   }
 });
