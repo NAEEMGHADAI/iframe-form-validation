@@ -58,38 +58,70 @@ const parentWindow = window.parent;
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   let msg = {};
-  if (!nameField.value || !country.value || !state.value) {
-    parentWindow.postMessage(
-      (msg = { error: "name, country and state are mandatory" }),
-      "*"
-    );
-    return;
-  }
 
-  if (nameField.value.length <= 4 || nameField.value.length >= 10) {
-    parentWindow.postMessage(
-      (msg = { Name: { error: "Name should be between 4-10 characters" } }),
-      "*"
-    );
-    return;
-  }
-  if (
-    !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email.value) &&
-    email.value
-  ) {
-    parentWindow.postMessage((msg = { error: "Invalid email address" }), "*");
-    return;
-  }
-  if (contact.value.length !== 10 && contact.value) {
-    parentWindow.postMessage(
-      (msg = { error: "Contact number should be of 10 digits" }),
-      "*"
-    );
-    return;
-  }
+  const validators = window.validators.validators;
+
+  validators.forEach((validator) => {
+    if (validator.validator.required) {
+      if (!document.getElementById(validator.field).value) {
+        msg[validator.field] = { error: "This field is required" };
+      }
+    }
+    if (validator.validator.minLength) {
+      console.log(
+        document.getElementById(validator.field).value.length,
+        validator.validator.minLength
+      );
+      if (
+        document.getElementById(validator.field).value.length <
+        validator.validator.minLength
+      ) {
+        msg[validator.field] = {
+          error: `This field should be of minimum ${validator.validator.minLength} characters`,
+        };
+      }
+    }
+    if (validator.validator.maxLength) {
+      if (
+        document.getElementById(validator.field).value.length >
+        validator.validator.maxLength
+      ) {
+        msg[validator.field] = {
+          error: `This field should be of maximum ${validator.validator.maxLength} characters`,
+        };
+      }
+    }
+    if (
+      validator.validator.regex &&
+      document.getElementById(validator.field).value
+    ) {
+      if (
+        !new RegExp(validator.validator.regex).test(
+          document.getElementById(validator.field).value
+        )
+      ) {
+        msg[validator.field] = { error: "Invalid input" };
+      }
+    }
+    if (
+      validator.validator.length &&
+      document.getElementById(validator.field).value
+    ) {
+      if (
+        document.getElementById(validator.field).value.length !==
+        validator.validator.length
+      ) {
+        msg[validator.field] = {
+          error: `This field should be of ${validator.validator.length} characters`,
+        };
+      }
+    }
+  });
+
   if (Object.keys(msg).length === 0) {
     parentWindow.postMessage((msg = { Success: "All Field are valid." }), "*");
   } else {
+    console.log(msg);
     parentWindow.postMessage(msg, "*");
   }
 });
