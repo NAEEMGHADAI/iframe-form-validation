@@ -1,13 +1,23 @@
 window.onmessage = function (e) {
   if (e.data) {
     document.getElementById("message").style.display = "block";
-    if (document.getElementById("message").innerHTML !== "Result:") {
-      document.getElementById("message").innerHTML = "Result:";
+    if (document.getElementById("message").innerHTML.length !== 0) {
+      document.getElementById("message").innerHTML = "";
     }
     for (const key in e.data) {
-      document.getElementById(
-        "message"
-      ).innerHTML += `<br>${key}: ${e.data[key].error}`;
+      if (e.data[key].error) {
+        document.getElementById(
+          "message"
+        ).innerHTML += `<div class="alert alert-danger mx-5" role="alert">${key}: ${JSON.stringify(
+          e.data[key]
+        )}</div>`;
+      } else {
+        document.getElementById(
+          "message"
+        ).innerHTML += `<div class="alert alert-success mx-5" role="alert">${key}: ${JSON.stringify(
+          e.data[key]
+        )}</div>`;
+      }
     }
   }
 };
@@ -29,7 +39,7 @@ const validators = {
       field: "contact",
       validator: {
         required: false,
-        length: 10,
+        regex: "[0-9]{10}",
       },
     },
     {
